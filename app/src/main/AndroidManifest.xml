@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -14,11 +15,27 @@
         android:theme="@style/Theme.LMS"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-        <!-- Uses cleartext traffic for HTTP requests -->
-
-
-
-
+        <activity
+            android:name="Admin.AcademicCalendarActivity"
+            android:exported="false" />
+        <activity
+            android:name="Shared.Attendance.EditAttendance"
+            android:exported="false" />
+        <activity
+            android:name="Shared.Attendance.Leave"
+            android:exported="false" />
+        <activity
+            android:name="Admin.AlumniProfileView"
+            android:exported="false" />
+        <activity
+            android:name="Admin.Announcement"
+            android:exported="false" />
+        <activity
+            android:name="Admin.Fee.FineChallan"
+            android:exported="false" />
+        <activity
+            android:name="Admin.AluminiProfile"
+            android:exported="false" /> <!-- Uses cleartext traffic for HTTP requests -->
         <activity
             android:name="Shared.SingleResult"
             android:exported="false" />
@@ -129,7 +146,6 @@
         <activity
             android:name="Shared.AssessmentTypeActivity"
             android:exported="false" />
-
         <activity
             android:name="Shared.shared_login"
             android:exported="true">

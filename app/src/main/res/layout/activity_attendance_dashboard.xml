@@ -6,280 +6,639 @@
     android:layout_height="match_parent"
     android:background="@color/background_primary">
 
+    <!-- App Bar -->
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background_primary">
+        android:background="@android:color/transparent"
+        app:elevation="0dp">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+        <!-- Header Card with Print Button -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/headerCard"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            app:cardBackgroundColor="@color/background_secondary"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp">
 
-            <TextView
-                android:id="@+id/tvTitle"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Attendance Dashboard"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-        </androidx.appcompat.widget.Toolbar>
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/header"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Attendance Dashboard"
+                    android:textColor="@color/text_primary"
+                    android:textSize="26sp"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-medium"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSummary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Print"
+                    android:textColor="@color/white"
+                    app:backgroundTint="@color/primary_color_dark"
+                    app:cornerRadius="12dp"
+                    app:icon="@drawable/ic_home"
+                    app:iconTint="@color/white"
+                    app:iconGravity="textStart"
+                    app:iconPadding="8dp"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
+        android:clipToPadding="false"
+        android:paddingTop="8dp"
+        android:paddingBottom="16dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
         <LinearLayout
-            android:background="@color/background_secondary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-
+            <!-- User Selection Card -->
             <com.google.android.material.card.MaterialCardView
-
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                app:cardCornerRadius="16dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
                 app:cardBackgroundColor="@color/background_secondary"
-                app:cardElevation="4dp">
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp">
 
                 <LinearLayout
-                    android:background="@color/background_secondary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                    <GridLayout
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Select User Type"
+                        android:textColor="@color/text_primary"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <RadioGroup
+                        android:id="@+id/userTypeRadioGroup"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:columnCount="2"
-                        android:layout_margin="16dp">
+                        android:layout_marginTop="8dp"
+                        android:orientation="horizontal">
 
-                        <!-- Mark Attendance Card -->
-                        <com.google.android.material.card.MaterialCardView
+                        <RadioButton
+                            android:id="@+id/rbStudent"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_columnWeight="1"
-                            android:layout_margin="8dp"
-                            app:cardCornerRadius="16dp"
-                            app:cardBackgroundColor="@color/background_secondary"
-                            app:cardElevation="4dp">
+                            android:layout_weight="1"
+                            android:text="Student"
+                            android:textColor="@color/text_primary"
+                            android:textSize="16sp"
+                            android:checked="true" />
 
-                            <LinearLayout
-                                android:id="@+id/btnMarkAttendance"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:gravity="center"
-                                android:padding="16dp">
-
-                                <androidx.cardview.widget.CardView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    app:cardBackgroundColor="@color/icon_background"
-                                    app:cardCornerRadius="24dp"
-                                    app:cardElevation="0dp">
-
-                                    <ImageView
-                                        android:layout_width="48dp"
-                                        android:layout_height="48dp"
-                                        android:padding="12dp"
-                                        android:src="@drawable/ic_fingerprint"
-                                        app:tint="@color/icon_tint" />
-                                </androidx.cardview.widget.CardView>
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="12dp"
-                                    android:gravity="center"
-                                    android:lineSpacingExtra="4dp"
-                                    android:text="Mark\nAttendance"
-                                    android:textColor="@color/text_primary"
-                                    android:textSize="16sp"
-                                    android:textStyle="bold" />
-                            </LinearLayout>
-                        </com.google.android.material.card.MaterialCardView>
-
-                        <!-- View Records Card -->
-                        <com.google.android.material.card.MaterialCardView
+                        <RadioButton
+                            android:id="@+id/rbTeacher"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_columnWeight="1"
-                            android:layout_margin="8dp"
-                            app:cardCornerRadius="16dp"
-                            app:cardBackgroundColor="@color/background_secondary"
-                            app:cardElevation="4dp">
-
-                            <LinearLayout
-                                android:id="@+id/btnViewRecords"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:gravity="center"
-                                android:padding="16dp">
-
-                                <androidx.cardview.widget.CardView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    app:cardBackgroundColor="@color/icon_background"
-                                    app:cardCornerRadius="24dp"
-                                    app:cardElevation="0dp">
-
-                                    <ImageView
-                                        android:layout_width="48dp"
-                                        android:layout_height="48dp"
-                                        android:padding="12dp"
-                                        android:src="@drawable/ic_calendar"
-                                        app:tint="@color/icon_tint" />
-                                </androidx.cardview.widget.CardView>
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="12dp"
-                                    android:gravity="center"
-                                    android:lineSpacingExtra="4dp"
-                                    android:text="View\nRecords"
-                                    android:textColor="@color/text_primary"
-                                    android:textSize="16sp"
-                                    android:textStyle="bold" />
-                            </LinearLayout>
-                        </com.google.android.material.card.MaterialCardView>
-                    </GridLayout>
+                            android:layout_weight="1"
+                            android:text="Teacher"
+                            android:textColor="@color/text_primary"
+                            android:textSize="16sp" />
+                    </RadioGroup>
                 </LinearLayout>
-
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Today's Statistics -->
-            <TextView
-                android:layout_width="wrap_content"
+            <!-- Action Buttons Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Today's Overview"
-                android:textColor="@color/text_primary"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="16dp"/>
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="@color/background_secondary"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp">
 
+                <GridLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:columnCount="3">
+
+                    <!-- Mark Attendance Card -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:layout_margin="8dp"
+                        app:cardBackgroundColor="@color/background_light"
+                        app:cardCornerRadius="16dp"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="#EAEAEA"
+                        app:cardElevation="0dp">
+
+                        <LinearLayout
+                            android:id="@+id/btnMarkAttendance"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="?attr/selectableItemBackground"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="64dp"
+                                android:layout_height="64dp"
+                                app:cardBackgroundColor="@color/primary_color_light"
+                                app:cardCornerRadius="32dp"
+                                app:cardElevation="4dp">
+
+                                <ImageView
+                                    android:layout_width="32dp"
+                                    android:layout_height="32dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_fingerprint"
+                                    android:alpha="0.9"
+                                    app:tint="@color/white" />
+                            </androidx.cardview.widget.CardView>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:gravity="center"
+                                android:lineSpacingExtra="4dp"
+                                android:text="Mark\n Attendance"
+                                android:textColor="@color/text_primary"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- View Records Card -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:layout_margin="8dp"
+                        app:cardBackgroundColor="@color/background_light"
+                        app:cardCornerRadius="16dp"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="#EAEAEA"
+                        app:cardElevation="0dp">
+
+                        <LinearLayout
+                            android:id="@+id/btnViewRecords"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="?attr/selectableItemBackground"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="64dp"
+                                android:layout_height="64dp"
+                                app:cardBackgroundColor="@color/primary_color_light"
+                                app:cardCornerRadius="32dp"
+                                app:cardElevation="4dp">
+
+                                <ImageView
+                                    android:layout_width="32dp"
+                                    android:layout_height="32dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_calendar"
+                                    android:alpha="0.9"
+                                    app:tint="@color/white" />
+                            </androidx.cardview.widget.CardView>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:gravity="center"
+                                android:lineSpacingExtra="4dp"
+                                android:text="View\nRecords"
+                                android:textColor="@color/text_primary"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Edit Attendance Card -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:layout_margin="8dp"
+                        app:cardBackgroundColor="@color/background_light"
+                        app:cardCornerRadius="16dp"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="#EAEAEA"
+                        app:cardElevation="0dp">
+
+                        <LinearLayout
+                            android:id="@+id/btnEditAttendance"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="?attr/selectableItemBackground"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="64dp"
+                                android:layout_height="64dp"
+                                app:cardBackgroundColor="@color/primary_color_light"
+                                app:cardCornerRadius="32dp"
+                                app:cardElevation="4dp">
+
+                                <ImageView
+                                    android:layout_width="32dp"
+                                    android:layout_height="32dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_lock"
+                                    android:alpha="0.9"
+                                    app:tint="@color/white" />
+                            </androidx.cardview.widget.CardView>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:gravity="center"
+                                android:lineSpacingExtra="4dp"
+                                android:text="Edit\nAttendance"
+                                android:textColor="@color/text_primary"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </GridLayout>
+            </com.google.android.material.card.MaterialCardView>
+            <!-- Student Overview Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="8dp">
+                android:orientation="vertical"
+                android:layout_marginTop="8dp">
 
-                <!-- Present Stats -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="0dp"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_margin="8dp"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="2dp">
+                    android:text="Student Overview"
+                    android:textColor="@color/text_primary"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginBottom="12dp"/>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:background="@color/background_secondary"
-                        android:padding="16dp">
-
-                        <com.google.android.material.progressindicator.CircularProgressIndicator
-                            android:id="@+id/presentProgress"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            app:indicatorSize="80dp"
-                            app:trackThickness="8dp"
-                            app:trackColor="@color/white"
-                            app:indicatorColor="@color/success_color"
-                            android:progress="85"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Present"
-                            android:textColor="@color/text_primary"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="16dp"/>
-
-                        <TextView
-                            android:id="@+id/tvPresentCount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="42/50 Students"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="14sp"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="4dp"/>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- Absent Stats -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_margin="8dp"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="2dp">
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <!-- Present Stats -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:background="@color/background_secondary"
-                        android:orientation="vertical"
-                        android:padding="16dp">
+                        android:layout_margin="4dp"
+                        android:layout_weight="1"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="3dp">
 
-                        <com.google.android.material.progressindicator.CircularProgressIndicator
-                            android:id="@+id/absentProgress"
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            app:indicatorSize="80dp"
-                            app:trackThickness="8dp"
-                            app:trackColor="@color/white"
-                            app:indicatorColor="@color/error_color"
-                            android:progress="15"/>
+                            android:background="@color/primary_color_dark"
+                            android:orientation="vertical"
+                            android:padding="16dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Absent"
-                            android:textColor="@color/text_primary"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="16dp"/>
+                            <com.google.android.material.progressindicator.CircularProgressIndicator
+                                android:id="@+id/studentPresentProgress"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:progress="85"
+                                app:indicatorColor="@color/white"
+                                app:indicatorSize="84dp"
+                                app:trackColor="@color/success_green"
+                                app:trackThickness="10dp" />
 
-                        <TextView
-                            android:id="@+id/tvAbsentCount"
-                            android:layout_width="wrap_content"
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="16dp"
+                                android:text="Present"
+                                android:textColor="@color/white"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvStudentPresentCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="4dp"
+                                android:text="42/50 Students"
+                                android:textColor="@color/white"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- On Leave Stats -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="4dp"
+                        android:layout_weight="1"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="3dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="8/50 Students"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="14sp"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="4dp"/>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                            android:background="@color/primary_color_dark"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <com.google.android.material.progressindicator.CircularProgressIndicator
+                                android:id="@+id/studentOnLeaveProgress"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:progress="10"
+                                app:indicatorColor="@color/white"
+                                app:indicatorSize="84dp"
+                                app:trackColor="@color/warning_color"
+                                app:trackThickness="10dp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="16dp"
+                                android:text="On Leave"
+                                android:textColor="@color/white"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvStudentOnLeaveCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="4dp"
+                                android:text="5/50 Students"
+                                android:textColor="@color/white"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Absent Stats -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="4dp"
+                        android:layout_weight="1"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="3dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/primary_color_dark"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <com.google.android.material.progressindicator.CircularProgressIndicator
+                                android:id="@+id/studentAbsentProgress"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:progress="5"
+                                app:indicatorColor="@color/white"
+                                app:indicatorSize="84dp"
+                                app:trackColor="@color/error_color"
+                                app:trackThickness="10dp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="16dp"
+                                android:text="Absent"
+                                android:textColor="@color/white"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvStudentAbsentCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="4dp"
+                                android:text="3/50 Students"
+                                android:textColor="@color/white"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
             </LinearLayout>
 
+            <!-- Teacher Overview Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="24dp">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Teacher Overview"
+                    android:textColor="@color/text_primary"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginBottom="12dp"/>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp">
+
+                    <!-- Present Stats -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_margin="4dp"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="3dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/primary_color_dark"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <com.google.android.material.progressindicator.CircularProgressIndicator
+                                android:id="@+id/teacherPresentProgress"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                app:indicatorSize="84dp"
+                                app:trackThickness="10dp"
+                                app:trackColor="@color/success_green"
+                                app:indicatorColor="@color/white"
+                                android:progress="75"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Present"
+                                android:textColor="@color/white"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="16dp"/>
+
+                            <TextView
+                                android:id="@+id/tvTeacherPresentCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="15/20 Teachers"
+                                android:textColor="@color/white"
+                                android:textSize="14sp"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="4dp"/>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- On Leave Stats -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_margin="4dp"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="3dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/primary_color_dark"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <com.google.android.material.progressindicator.CircularProgressIndicator
+                                android:id="@+id/teacherOnLeaveProgress"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                app:indicatorSize="84dp"
+                                app:trackThickness="10dp"
+                                app:trackColor="@color/warning_color"
+                                app:indicatorColor="@color/white"
+                                android:progress="15"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="On Leave"
+                                android:textColor="@color/white"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="16dp"/>
+
+                            <TextView
+                                android:id="@+id/tvTeacherOnLeaveCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="3/20 Teachers"
+                                android:textColor="@color/white"
+                                android:textSize="14sp"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="4dp"/>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Absent Stats -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_margin="4dp"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="3dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/primary_color_dark"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <com.google.android.material.progressindicator.CircularProgressIndicator
+                                android:id="@+id/teacherAbsentProgress"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                app:indicatorSize="84dp"
+                                app:trackThickness="10dp"
+                                app:trackColor="@color/error_color"
+                                app:indicatorColor="@color/white"
+                                android:progress="10"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Absent"
+                                android:textColor="@color/white"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="16dp"/>
+
+                            <TextView
+                                android:id="@+id/tvTeacherAbsentCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="2/20 Teachers"
+                                android:textColor="@color/white"
+                                android:textSize="14sp"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="4dp"/>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
-
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

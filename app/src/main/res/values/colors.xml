@@ -1,37 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Primary Color Palette (Dark Blue Theme) -->
-    <color name="primary_color">#1A488E</color>
-    <color name="primary_color_dark">#133466</color>
-    <color name="primary_color_light">#2563EB</color>
+    <!-- Primary Color Palette (White and Blue Theme) -->
+    <color name="primary_color">#2563EB</color>
+    <color name="primary_color_dark">#1A488E</color>
+    <color name="primary_color_light">#4F83D3</color>
 
     <!-- Accent Colors -->
     <color name="accent_color">#4F46E5</color>
     <color name="accent_color_variant">#6366F1</color>
 
-    <color name="icon_background">#F5F5F5</color>
+    <color name="icon_background">#FFFFFF</color>
     <color name="icon_tint">@color/primary_color</color>
 
-    <!-- Background Colors  -->
-    <color name="background_primary">#0F172A</color>
-    <color name="background_secondary">#1E293B</color>
-    <color name="background_tertiary">#334155</color>
+    <!-- Background Colors (Now White-based) -->
+    <color name="background_primary">#FFFFFF</color>
+    <color name="background_secondary">#CEDBFA</color>
+    <color name="background_tertiary">#F1F5F9</color>
+
+    <color name="chip_background_color">@color/primary_color_light</color>
+
 
     <!-- Light Background -->
     <color name="background_light">#F1F5F9</color>
     <color name="background_light_variant">#E2E8F0</color>
 
-    <!-- Text Colors -->
-    <color name="text_primary">#D1D5DB</color>  <!-- Lightened for better contrast -->
-    <color name="text_secondary">#9CA3AF</color>
-    <color name="text_tertiary">#6B7280</color>
-    <color name="text_dark">#1E293B</color>
+    <!-- Text Colors (Now Dark for White Background) -->
+    <color name="text_primary">#1E293B</color>
+    <color name="text_secondary">#475569</color>
+    <color name="text_tertiary">#64748B</color>
+    <color name="text_dark">#0F172A</color>
 
     <!-- Status and Feedback Colors -->
-    <color name="success_color">#22C55E</color>  <!-- More vibrant green -->
-    <color name="warning_color">#EAB308</color>  <!-- Brighter yellow -->
-    <color name="error_color">#DC2626</color>  <!-- Darker red for contrast -->
-    <color name="info_color">#2563EB</color>  <!-- Unified with primary color -->
+    <color name="success_color">#22C55E</color>
+    <color name="warning_color">#EAB308</color>
+    <color name="error_color">#DC2626</color>
+    <color name="info_color">#2563EB</color>
 
     <!-- Neutral Colors -->
     <color name="white">#FFFFFF</color>
@@ -39,19 +42,61 @@
     <color name="transparent">#00000000</color>
 
     <!-- Overlay and Shadow Colors -->
-    <color name="overlay_color">#80000000</color>
-    <color name="shadow_color">#40000000</color>
+    <color name="overlay_color">#20000000</color>
+    <color name="shadow_color">#15000000</color>
 
     <!-- Primary Light Color -->
     <color name="primary_light">#4F83D3</color>
     <color name="primary_light_variant">#7AAAF0</color>
 
     <!-- Table and UI Colors -->
-    <color name="table_row_background">#1E293B</color>  <!-- Darkened for better contrast -->
-    <color name="table_text_color">#CBD5E1</color>  <!-- Softer contrast -->
-    <color name="button_background">#2563EB</color>  <!-- Matched with primary light -->
-    <color name="table_background">#F8FAFC</color>  <!-- Slightly off-white for better legibility -->
+    <color name="table_row_background">#F8FAFC</color>
+    <color name="table_text_color">#1E293B</color>
+    <color name="button_background">#2563EB</color>
+    <color name="table_background">#FFFFFF</color>
 
-    <!-- Header Background (Kept Same) -->
-    <color name="header_background">#0F172A</color>
+
+    <!-- table -->
+
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="header_background">#3F51B5</color>
+    <color name="table_row_even">#F5F5F5</color>
+    <color name="table_row_odd">#FFFFFF</color>
+    <color name="table_border">#E0E0E0</color>
+
+
+
+        <color name="colorAccent">#FF4081</color>
+
+
+        <color name="background_input">#F9F9F9</color>
+
+
+        <color name="text_hint">#9E9E9E</color>
+
+
+        <color name="success_green">#4CAF50</color>
+
+
+
+        <color name="chip_unselected">#F1F1F1</color>
+        <color name="chip_selected">#D1E3FF</color>
+        <color name="chip_text_selected">#0D47A1</color>
+
+
+    <color name="error_text">#D32F2F</color>
+    <color name="score_excellent">#81C784</color>
+    <color name="score_good">#AED581</color>
+    <color name="score_average">#FFD54F</color>
+    <color name="score_poor">#FF8A65</color>
+
+
+    <color name="divider_color">#E0E0E0</color>
+
+
+    <color name="event_exam">#E53935</color>
+    <color name="event_holiday">#43A047</color>
+    <color name="event_meeting">#1E88E5</color>
+    <color name="event_important">#FFB300</color>
 </resources>

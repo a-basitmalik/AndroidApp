@@ -4,6 +4,20 @@ import org.json.JSONException;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.RetryPolicy;
 import android.util.Log;
+import android.widget.ImageView;
+import android.view.View;
+import android.Manifest;
+import android.net.Uri;
+import android.provider.MediaStore;
+import android.graphics.Bitmap;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import android.widget.TextView;
+import android.util.Base64;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
@@ -24,7 +38,8 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONObject;
 
 import androidx.activity.result.ActivityResultLauncher;
-
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.cardview.widget.CardView;
 import androidx.appcompat.app.AppCompatActivity;
 
 
@@ -43,14 +58,20 @@ import Models.DAO.DatabaseConnection;
 import Models.Student;
 public class addStudent extends AppCompatActivity {
     private TextInputEditText etStudentName, etPhoneNumber, etRFID, etPassword, etYear, etFeeAmount;
-    private Button btnSubmit;
+    private Button btnSubmit, btnBulkUpload;
     private AutoCompleteTextView subjectsDropdown;
+    private ImageView profileImageView;
+    private CardView profileImageCard;
+    private TextView uploadPhotoText;
     private List<String> selectedSubjects = new ArrayList<>();
-    private int selectedCampusId =1;
-    private int selectedYear =1;
+    private int selectedCampusId = 1;
+    private int selectedYear = 1;
+    private Bitmap profileBitmap = null;
+    private static final int PERMISSION_REQUEST_CODE = 100;
 
-
+    private ActivityResultLauncher<Intent> imagePickerLauncher;
     private ActivityResultLauncher<String[]> filePickerLauncher;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,11 +79,93 @@ public class addStudent extends AppCompatActivity {
         selectedCampusId = getIntent().getIntExtra("campusID", 2);
 
         initializeViews();
+        setupImagePicker();
         subjectsDropdown = findViewById(R.id.subjectsDropdown);  // Ensure you have the correct ID here
         getSubjectsForCampusAndYear(selectedCampusId, 1);
         setupValidations();
-    }    //function added for getting subjects for a campus and year from the database
+        setupBulkUpload();
+    }
 
+    private void setupImagePicker() {
+        imagePickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Uri selectedImage = result.getData().getData();
+                        try {
+                            profileBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage);
+                            profileImageView.setImageBitmap(profileBitmap);
+                            uploadPhotoText.setText("Change Photo");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            showErrorDialog("Failed to load image.");
+                        }
+                    }
+                }
+        );
+
+        profileImageCard.setOnClickListener(v -> {
+            if (checkPermissions()) {
+                openImagePicker();
+            } else {
+                requestPermissions();
+            }
+        });
+    }
+
+    private boolean checkPermissions() {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestPermissions() {
+        ActivityCompat.requestPermissions(
+                this,
+                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                PERMISSION_REQUEST_CODE
+        );
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openImagePicker();
+            } else {
+                showErrorDialog("Permission denied. Cannot select profile picture.");
+            }
+        }
+    }
+
+    private void openImagePicker() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        imagePickerLauncher.launch(intent);
+    }
+
+    private void setupBulkUpload() {
+        filePickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.OpenDocument(),
+                uri -> {
+                    if (uri != null) {
+                        // Handle CSV file processing here
+                        processCsvFile(uri);
+                    }
+                }
+        );
+
+        btnBulkUpload.setOnClickListener(v -> {
+            filePickerLauncher.launch(new String[]{"text/csv"});
+        });
+    }
+
+    private void processCsvFile(Uri fileUri) {
+        // CSV file processing logic would go here
+        // For now, just show a success message
+        showSuccessDialog("CSV file selected successfully. Processing bulk upload.");
+    }
+
+    //function added for getting subjects for a campus and year from the database
     private void getSubjectsForCampusAndYear(int campusId, int year) {
         String url = "http://193.203.162.232:5050/subject/get_subjects?campus_id=" + campusId + "&year=" + year;
 
@@ -76,7 +179,7 @@ public class addStudent extends AppCompatActivity {
                     try {
                         JSONArray subjectsArray = response.getJSONArray("subjects");
                         List<String> subjects = new ArrayList<>();
-                       for (int i = 0; i < subjectsArray.length(); i++) {
+                        for (int i = 0; i < subjectsArray.length(); i++) {
                             subjects.add(subjectsArray.getString(i));
                         }
                         setupSubjectsDropdown(subjects);
@@ -136,8 +239,11 @@ public class addStudent extends AppCompatActivity {
         etYear = findViewById(R.id.etYear);
         etFeeAmount = findViewById(R.id.etFeeAmount);
         subjectsDropdown = findViewById(R.id.subjectsDropdown);
-
+        profileImageView = findViewById(R.id.profileImageView);
+        profileImageCard = findViewById(R.id.profileImageCard);
+        uploadPhotoText = findViewById(R.id.uploadPhotoText);
         btnSubmit = findViewById(R.id.btnSubmit);
+
     }
 
     private void setupValidations() {
@@ -224,15 +330,13 @@ public class addStudent extends AppCompatActivity {
         }
 
         Student student = new Student.StudentBuilder(
-
                 etStudentName.getText().toString(),
                 etPhoneNumber.getText().toString(),
                 etPassword.getText().toString())
                 .rfid(Integer.parseInt(etRFID.getText().toString()))
                 .year(Integer.parseInt(etYear.getText().toString()))
                 .campusId(selectedCampusId)
-                .studentId(generateStudentID(selectedCampusId)
-)
+                .studentId(generateStudentID(selectedCampusId))
                 .absenteeId(generateAbsenteeID())
                 .feeAmount(Integer.parseInt(etFeeAmount.getText().toString()))
                 .subjects(selectedSubjects)
@@ -281,10 +385,9 @@ public class addStudent extends AppCompatActivity {
             subjectsDropdown.setError("At least one subject is required");
             isValid = false;
         }
+
         return isValid;
     }
-
-
 
     private boolean isValidYear(String yearStr) {
         try {
@@ -294,6 +397,7 @@ public class addStudent extends AppCompatActivity {
             return false;
         }
     }
+
     private void showErrorDialog(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Error")
@@ -307,7 +411,12 @@ public class addStudent extends AppCompatActivity {
                 .show();
     }
 
-
+    private String encodeImage(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
+        byte[] imageBytes = baos.toByteArray();
+        return Base64.encodeToString(imageBytes, Base64.DEFAULT);
+    }
 
     private void saveStudent(Student student) {
         ProgressDialog progressDialog = new ProgressDialog(this);
@@ -328,6 +437,11 @@ public class addStudent extends AppCompatActivity {
             jsonObject.put("student_name", student.getStudentName());
             jsonObject.put("year", student.getYear());
             jsonObject.put("subjects", new JSONArray(student.getSubjects()));
+
+            // Add profile image if available
+            if (profileBitmap != null) {
+                jsonObject.put("profile_image", encodeImage(profileBitmap));
+            }
         } catch (JSONException e) {
             e.printStackTrace();
             progressDialog.dismiss();
@@ -338,7 +452,7 @@ public class addStudent extends AppCompatActivity {
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
                 response -> {
                     progressDialog.dismiss();
-                    showSuccessDialog();
+                    showSuccessDialog("Student added successfully!");
                 },
                 error -> {
                     progressDialog.dismiss();
@@ -356,10 +470,10 @@ public class addStudent extends AppCompatActivity {
         requestQueue.add(request);
     }
 
-    private void showSuccessDialog() {
+    private void showSuccessDialog(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Success")
-                .setMessage("Student added successfully!")
+                .setMessage(message)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -368,7 +482,6 @@ public class addStudent extends AppCompatActivity {
                 })
                 .show();
     }
-
 
     private String generateStudentID(int campusId) {
         Connection conn = DatabaseConnection.getConnection();
@@ -393,9 +506,7 @@ public class addStudent extends AppCompatActivity {
         return  campusId + "001";
     }
 
-
-//helper function to translate subject names selected in dropdown to their respective ids
-
+    //helper function to translate subject names selected in dropdown to their respective ids
     private int getSubjectIdByName(String subjectName, int campusId, int year) {
         Connection conn = DatabaseConnection.getConnection();
         if (conn == null) return -1;
@@ -426,12 +537,10 @@ public class addStudent extends AppCompatActivity {
         return -1;
     }
 
-
-//I think we should use some password generator instead of taking password as input because admins have to set it
+    //I think we should use some password generator instead of taking password as input because admins have to set it
     private String generateRandomPassword() {
         return "LGSC" + new Random().nextInt(9000) + 1000;
     }
-
 
     private String generateAbsenteeID() {
         //  DB CALL TODO
@@ -443,6 +552,3 @@ public class addStudent extends AppCompatActivity {
         return 0;
     }
 }
-
-
-//TODO CSV LOGIC:

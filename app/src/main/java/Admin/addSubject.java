@@ -7,20 +7,29 @@ import java.util.HashMap;
 import java.util.Map;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.android.volley.RequestQueue;
 import com.example.lms.R;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
@@ -32,15 +41,31 @@ import Models.Teacher;
 public class addSubject extends AppCompatActivity {
     private List<Teacher> teacherList = new ArrayList<>();
 
-    private TextInputEditText etSubjectName, etTime, etYear;
-    private AutoCompleteTextView dayDropdown, teacherDropdown;
-    private Button btnSubmit;
+    private TextInputEditText etSubjectName, etYear;
+    private AutoCompleteTextView teacherDropdown;
+    private Button btnSubmit, btnAddTimeSlot;
+    private LinearLayout timeSlotContainer;
     private RequestQueue requestQueue;
+    private ChipGroup selectedDaysChipGroup;
 
     private int campusId;
     private String campusName;
 
+    // List to store time slots (day and time)
+    private List<TimeSlot> timeSlots = new ArrayList<>();
+
     private static final String BASE_URL = "http://193.203.162.232:5050"; // Replace with your Flask API URL
+
+    // Class to represent a time slot
+    private static class TimeSlot {
+        String day;
+        String time;
+
+        TimeSlot(String day, String time) {
+            this.day = day;
+            this.time = time;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,37 +83,47 @@ public class addSubject extends AppCompatActivity {
         }
 
         initializeViews();
-        setupDropdowns();
-        setupTimePicker();
+        setupTeacherDropdown();
+        setupAddTimeSlotButton();
         setupSubmitButton();
     }
 
     private void initializeViews() {
         etSubjectName = findViewById(R.id.etSubjectName);
-        etTime = findViewById(R.id.etTime);
         etYear = findViewById(R.id.etYear);
-        dayDropdown = findViewById(R.id.dayDropdown);
         teacherDropdown = findViewById(R.id.teacherDropdown);
         btnSubmit = findViewById(R.id.btnSubmit);
+        btnAddTimeSlot = findViewById(R.id.btnAddTimeSlot);
+        timeSlotContainer = findViewById(R.id.timeSlotContainer);
+        selectedDaysChipGroup = findViewById(R.id.selectedDaysChipGroup);
     }
 
-    private void setupDropdowns() {
-        // Static days dropdown
-        String[] days = new String[]{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
-        ArrayAdapter<String> daysAdapter = new ArrayAdapter<>(this, R.layout.dropdown_item, days);
-        dayDropdown.setAdapter(daysAdapter);
-
+    private void setupTeacherDropdown() {
         // Load teachers from API
         loadTeachers();
     }
 
-    private void setupTimePicker() {
-        etTime.setOnClickListener(v -> {
+    private void setupAddTimeSlotButton() {
+        btnAddTimeSlot.setOnClickListener(v -> showAddTimeSlotDialog());
+    }
+
+    private void showAddTimeSlotDialog() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_time_slot, null);
+
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+        builder.setTitle("Add Time Slot");
+        builder.setView(dialogView);
+
+        final ChipGroup dayChipGroup = dialogView.findViewById(R.id.chipGroupDays);
+        final TextInputEditText etTimeDialog = dialogView.findViewById(R.id.etTimeDialog);
+
+        // Set up time picker
+        etTimeDialog.setOnClickListener(v -> {
             TimePickerDialog timePickerDialog = new TimePickerDialog(
                     this,
                     (view, hourOfDay, minute) -> {
                         String time = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute);
-                        etTime.setText(time);
+                        etTimeDialog.setText(time);
                     },
                     Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
                     Calendar.getInstance().get(Calendar.MINUTE),
@@ -96,6 +131,61 @@ public class addSubject extends AppCompatActivity {
             );
             timePickerDialog.show();
         });
+
+        builder.setPositiveButton("Add", (dialog, which) -> {
+            String time = etTimeDialog.getText().toString();
+            if (TextUtils.isEmpty(time)) {
+                Toast.makeText(this, "Please select a time", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            List<String> selectedDays = new ArrayList<>();
+            for (int i = 0; i < dayChipGroup.getChildCount(); i++) {
+                Chip chip = (Chip) dayChipGroup.getChildAt(i);
+                if (chip.isChecked()) {
+                    selectedDays.add(chip.getText().toString());
+                }
+            }
+
+            if (selectedDays.isEmpty()) {
+                Toast.makeText(this, "Please select at least one day", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Add time slots for each selected day
+            for (String day : selectedDays) {
+                addTimeSlot(day, time);
+            }
+        });
+
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
+    }
+
+    private void addTimeSlot(String day, String time) {
+        // Add to our list
+        timeSlots.add(new TimeSlot(day, time));
+
+        // Add chip to UI
+        Chip chip = new Chip(this);
+        chip.setText(day + " at " + time);
+        chip.setCloseIconVisible(true);
+        chip.setCheckable(false);
+
+        chip.setOnCloseIconClickListener(v -> {
+            // Remove from list
+            for (int i = 0; i < timeSlots.size(); i++) {
+                TimeSlot slot = timeSlots.get(i);
+                if (slot.day.equals(day) && slot.time.equals(time)) {
+                    timeSlots.remove(i);
+                    break;
+                }
+            }
+            // Remove from UI
+            selectedDaysChipGroup.removeView(chip);
+        });
+
+        selectedDaysChipGroup.addView(chip);
     }
 
     private void loadTeachers() {
@@ -153,20 +243,16 @@ public class addSubject extends AppCompatActivity {
             etSubjectName.setError("Subject name is required");
             isValid = false;
         }
-        if (TextUtils.isEmpty(dayDropdown.getText())) {
-            dayDropdown.setError("Day is required");
-            isValid = false;
-        }
-        if (TextUtils.isEmpty(etTime.getText())) {
-            etTime.setError("Time is required");
-            isValid = false;
-        }
         if (TextUtils.isEmpty(teacherDropdown.getText())) {
             teacherDropdown.setError("Teacher is required");
             isValid = false;
         }
         if (TextUtils.isEmpty(etYear.getText())) {
             etYear.setError("Year is required");
+            isValid = false;
+        }
+        if (timeSlots.isEmpty()) {
+            Toast.makeText(this, "At least one day and time slot is required", Toast.LENGTH_SHORT).show();
             isValid = false;
         }
 
@@ -177,8 +263,6 @@ public class addSubject extends AppCompatActivity {
         String url = BASE_URL + "/subject/api/add_subject";
 
         String subjectName = etSubjectName.getText().toString();
-        String day = dayDropdown.getText().toString();
-        String time = etTime.getText().toString();
         int year = Integer.parseInt(etYear.getText().toString());
 
         // Find selected teacher
@@ -198,18 +282,29 @@ public class addSubject extends AppCompatActivity {
         }
 
         try {
+            // Create a JSON array of time slots
+            JSONArray timeSlotArray = new JSONArray();
+            for (TimeSlot slot : timeSlots) {
+                JSONObject slotObj = new JSONObject();
+                slotObj.put("day", slot.day);
+                slotObj.put("time", slot.time);
+                timeSlotArray.put(slotObj);
+            }
+
             JSONObject jsonBody = new JSONObject();
             jsonBody.put("subject_name", subjectName);
-            jsonBody.put("day", day);
-            jsonBody.put("time", time);
+            jsonBody.put("time_slots", timeSlotArray);
             jsonBody.put("teacher_id", teacherId);
             jsonBody.put("teacher_name", selectedTeacherName);
-            jsonBody.put("campus_id", campusId); // Use campus ID from intent
-            jsonBody.put("campus_name", campusName); // Use campus name from intent
+            jsonBody.put("campus_id", campusId);
+            jsonBody.put("campus_name", campusName);
             jsonBody.put("year", year);
 
             JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, jsonBody,
-                    response -> Toast.makeText(this, "Subject added successfully!", Toast.LENGTH_SHORT).show(),
+                    response -> {
+                        Toast.makeText(this, "Subject added successfully!", Toast.LENGTH_SHORT).show();
+                        finish(); // Return to previous screen after successful addition
+                    },
                     error -> Toast.makeText(this, "Error saving subject: " + error.getMessage(), Toast.LENGTH_SHORT).show()
             ) {
                 @Override

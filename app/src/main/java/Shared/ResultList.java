@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.lms.R;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import com.google.android.material.textfield.TextInputEditText;
@@ -20,6 +21,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.content.Context;
+import android.widget.Toast;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -28,6 +31,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import Models.Student;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import java.util.HashMap;
+import java.util.Map;
+
+
+
 
 public class ResultList extends AppCompatActivity {
     private ListView studentListView;
@@ -35,7 +45,7 @@ public class ResultList extends AppCompatActivity {
     private StudentAdapter adapter;
     private TextInputEditText searchEditText;
     private RequestQueue requestQueue;
-
+    private MaterialButton btnSummary;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +53,9 @@ public class ResultList extends AppCompatActivity {
 
         studentListView = findViewById(R.id.studentListView);
         searchEditText = findViewById(R.id.searchEditText);
+
+        btnSummary = findViewById(R.id.btnSummary);
+        btnSummary.setOnClickListener(v -> showResultSummary());
 
         studentList = new ArrayList<>();
         adapter = new StudentAdapter(this, studentList);
@@ -72,6 +85,60 @@ public class ResultList extends AppCompatActivity {
             public void afterTextChanged(Editable s) {}
         });
     }
+
+    private void printSummary(String summary) {
+        Toast.makeText(this, "Printing summary...", Toast.LENGTH_SHORT).show();
+        Log.d("ResultSummary", summary);
+
+        //TODO:
+        // For actual printing, you might use:
+        // 1. Android's Printing Framework
+        // 2. A PDF generation library
+        // 3. Send to a printer via Bluetooth/WiFi
+    }
+
+    private void showMessage(String title, String message) {
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton("OK", null)
+                .show();
+    }
+    private void showResultSummary() {
+        if (studentList.isEmpty()) {
+            showMessage("No students available", "The student list is empty.");
+            return;
+        }
+
+
+        Map<Integer, Integer> yearCounts = new HashMap<>();
+        int totalStudents = studentList.size();
+
+        for (Student student : studentList) {
+            int year = student.getYear();
+            yearCounts.put(year, yearCounts.getOrDefault(year, 0) + 1);
+        }
+
+
+        StringBuilder summary = new StringBuilder();
+        summary.append("Total Students: ").append(totalStudents).append("\n\n");
+        summary.append("Students by Year:\n");
+
+        for (Map.Entry<Integer, Integer> entry : yearCounts.entrySet()) {
+            summary.append("Year ").append(entry.getKey())
+                    .append(": ").append(entry.getValue())
+                    .append(" students\n");
+        }
+
+
+        new MaterialAlertDialogBuilder(this)
+                .setTitle("Student Result Summary")
+                .setMessage(summary.toString())
+                .setPositiveButton("Print", (dialog, which) -> printSummary(summary.toString()))
+                .setNegativeButton("Close", null)
+                .show();
+    }
+
 
     private void fetchStudentsData() {
         Intent intent = getIntent();

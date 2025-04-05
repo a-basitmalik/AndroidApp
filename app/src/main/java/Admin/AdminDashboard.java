@@ -63,6 +63,8 @@ public class AdminDashboard extends AppCompatActivity implements View.OnClickLis
         CardView resultsCard = findViewById(R.id.result_management_card);
         CardView feeManagementCard = findViewById(R.id.fee_management_card);
         CardView alumniCard = findViewById(R.id.alumni_management_card);
+        CardView announcementCard = findViewById(R.id.ann_management_card);
+        CardView academicCal = findViewById(R.id.academic_cal);
 
 
         studentManagementCard.setOnClickListener(this);
@@ -72,6 +74,8 @@ public class AdminDashboard extends AppCompatActivity implements View.OnClickLis
         resultsCard.setOnClickListener(this);
         feeManagementCard.setOnClickListener(this);
         alumniCard.setOnClickListener(this);
+        announcementCard.setOnClickListener(this);
+        academicCal.setOnClickListener(this);
 
 
         campusName = getIntent().getStringExtra("campusName");
@@ -109,7 +113,13 @@ public class AdminDashboard extends AppCompatActivity implements View.OnClickLis
             navigateToActivity(FeeDashboard.class, "Attendance Management");
 
         } else if (viewId == R.id.alumni_management_card) {
-            handleUnimplementedFeature("Alumni");
+            navigateToActivity(SharedList.class, "alumni");
+        }
+        else if (viewId == R.id.ann_management_card){
+            navigateToActivity(Announcement.class, "Announcement");
+        }
+        else if (viewId == R.id.academic_cal){
+            navigateToActivity(AcademicCalendarActivity.class, "Academic Calander");
         }
     }
 

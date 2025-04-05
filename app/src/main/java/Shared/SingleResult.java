@@ -7,9 +7,13 @@ import android.view.Gravity;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.graphics.drawable.GradientDrawable;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.cardview.widget.CardView;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -31,7 +35,8 @@ import Models.SubjectAssessment;
 
 public class SingleResult extends AppCompatActivity {
     private TableLayout tableAssessment;
-    private TextView tvMonthYear;
+    private TextView tvExamTitle;
+    private LinearLayout resultContainer;
     private String studentId="1229";
     private static final String API_URL = "http://193.203.162.232:5050/result/get_assessment_monthly";
     private static final String TAG = "SingleResult";
@@ -48,19 +53,27 @@ public class SingleResult extends AppCompatActivity {
             studentId = intent.getStringExtra("STUDENT_ID");
             String type = intent.getStringExtra("type");
 
+            // Set the exam title based on the type
+            tvExamTitle.setText(type + " Assessment Results");
+
             if ("Monthly".equalsIgnoreCase(type)) {
                 fetchAssessmentData();
             } else {
                 fetchAssessmentDataElse();
-
             }
         }
     }
 
-
     private void initializeViews() {
         tableAssessment = findViewById(R.id.tableAssessment);
-        tvMonthYear = findViewById(R.id.tvMonthYear);
+        tvExamTitle = findViewById(R.id.tvMonthYear); // Reusing the existing TextView but with a more appropriate name
+        resultContainer = findViewById(R.id.resultContainer);
+
+        // Apply styles to the title
+        tvExamTitle.setTextSize(22);
+        tvExamTitle.setTypeface(null, Typeface.BOLD);
+        tvExamTitle.setTextColor(ContextCompat.getColor(this, R.color.colorPrimary));
+        tvExamTitle.setPadding(0, 24, 0, 24);
     }
 
     private void fetchAssessmentData() {
@@ -83,6 +96,7 @@ public class SingleResult extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.e(TAG, "Error fetching data: " + (error.getMessage() != null ? error.getMessage() : "Unknown error"));
+                        showErrorMessage("Could not load assessment data. Please try again later.");
                     }
                 }
         );
@@ -109,11 +123,12 @@ public class SingleResult extends AppCompatActivity {
                     JSONObject assessmentsData = responseData.getJSONObject("assessments"); // Extract the "assessments" object
                     Iterator<String> keys = assessmentsData.keys(); // Iterate over its keys (month-year)
 
+                    int examNumber = 1; // Start with exam 1
+
                     while (keys.hasNext()) {
                         String monthYear = keys.next();
 
                         JSONArray assessmentsArray = assessmentsData.getJSONArray(monthYear);
-
 
                         for (int i = 0; i < assessmentsArray.length(); i++) {
                             JSONObject obj = assessmentsArray.getJSONObject(i);
@@ -124,9 +139,10 @@ public class SingleResult extends AppCompatActivity {
                             double assessmentTotal = obj.isNull("assessment_total") ? 0.0 : obj.optDouble("assessment_total", 0.0);
                             double assessmentMarks = obj.isNull("assessment_marks") ? 0.0 : obj.optDouble("assessment_marks", 0.0);
 
-
-                            monthlyAssessments.putIfAbsent(monthYear, new HashMap<>());
-                            Map<String, SubjectAssessment> assessmentsMap = monthlyAssessments.get(monthYear);
+                            // Create a key for the exam number instead of month-year
+                            String examKey = "Exam " + examNumber;
+                            monthlyAssessments.putIfAbsent(examKey, new HashMap<>());
+                            Map<String, SubjectAssessment> assessmentsMap = monthlyAssessments.get(examKey);
 
                             SubjectAssessment subjectAssessment = assessmentsMap.getOrDefault(subjectName,
                                     new SubjectAssessment(subjectName, 0, 0, 0, assessmentMarks, assessmentTotal));
@@ -149,84 +165,153 @@ public class SingleResult extends AppCompatActivity {
                             double totalMarksAchieved = avgQuizMarks + assessmentMarks;
                             subjectAssessment.setTotalMarksAchieved(totalMarksAchieved);
 
-
                             assessmentsMap.put(subjectName, subjectAssessment);
                         }
+
+                        examNumber++; // Increment exam number for the next set
                     }
 
-                    for (String monthYear : monthlyAssessments.keySet()) {
-                        addMonthHeader(monthYear);
-                        for (SubjectAssessment assessment : monthlyAssessments.get(monthYear).values()) {
+                    // Add a header row with column titles
+                    addTableHeader();
+
+                    for (String examKey : monthlyAssessments.keySet()) {
+                        addExamHeader(examKey);
+                        for (SubjectAssessment assessment : monthlyAssessments.get(examKey).values()) {
                             addSubjectRow(assessment);
                         }
                     }
 
                 } catch (Exception e) {
                     Log.e("Checking", "Error parsing data: " + e.getMessage());
+                    showErrorMessage("Error displaying assessment data.");
                 }
             }
         });
     }
 
-    private void addMonthHeader(String monthYear) {
-        TableRow row = new TableRow(this);
-        row.setPadding(8, 16, 8, 16);
-        row.setBackgroundColor(ContextCompat.getColor(this, R.color.header_background));
+    private void addTableHeader() {
+        TableRow headerRow = new TableRow(this);
+        headerRow.setPadding(8, 16, 8, 16);
+        headerRow.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+
+        String[] headers = {"Subject", "Quiz 1", "Quiz 2", "Quiz 3", "Avg Quiz", "Total", "Marks", "Achieved"};
+        int[] widths = {150, 80, 80, 80, 120, 120, 120, 120};
+
+        for (int i = 0; i < headers.length; i++) {
+            TextView tv = new TextView(this);
+            TableRow.LayoutParams params = new TableRow.LayoutParams(widths[i], TableRow.LayoutParams.WRAP_CONTENT);
+            tv.setLayoutParams(params);
+            tv.setText(headers[i]);
+            tv.setTextColor(ContextCompat.getColor(this, R.color.white));
+            tv.setGravity(Gravity.CENTER);
+            tv.setPadding(8, 8, 8, 8);
+            tv.setTypeface(null, Typeface.BOLD);
+            headerRow.addView(tv);
+        }
+
+        tableAssessment.addView(headerRow);
+    }
+
+    private void addExamHeader(String examNumber) {
+        CardView cardView = new CardView(this);
+        CardView.LayoutParams cardParams = new CardView.LayoutParams(
+                CardView.LayoutParams.MATCH_PARENT,
+                CardView.LayoutParams.WRAP_CONTENT
+        );
+        cardParams.setMargins(0, 24, 0, 0);
+        cardView.setLayoutParams(cardParams);
+        cardView.setCardElevation(4f);
+        cardView.setRadius(8f);
+        cardView.setCardBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
 
         TextView textView = new TextView(this);
-        textView.setText(monthYear);
-        textView.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
+        textView.setText(examNumber);
+        textView.setTextColor(ContextCompat.getColor(this, R.color.white));
         textView.setGravity(Gravity.CENTER);
-        textView.setPadding(8, 16, 8, 16);
+        textView.setPadding(16, 16, 16, 16);
         textView.setTextSize(18);
         textView.setTypeface(null, Typeface.BOLD);
 
+        cardView.addView(textView);
+
+        // Add the card to the table as a full-width row
+        TableRow row = new TableRow(this);
         TableRow.LayoutParams params = new TableRow.LayoutParams(
                 TableRow.LayoutParams.MATCH_PARENT,
                 TableRow.LayoutParams.WRAP_CONTENT
         );
-        params.span = 7;
-        textView.setLayoutParams(params);
-
-        row.addView(textView);
+        params.span = 8; // Span all columns
+        cardView.setLayoutParams(params);
+        row.addView(cardView);
         tableAssessment.addView(row);
     }
 
     private void addSubjectRow(SubjectAssessment assessment) {
         TableRow row = new TableRow(this);
         row.setPadding(8, 8, 8, 8);
-        row.setBackgroundColor(ContextCompat.getColor(this, R.color.table_row_background));
 
-        addCell(row, assessment.getSubject(), 150);
-        addCell(row, String.format("%.1f", assessment.getQuiz1()), 80);
-        addCell(row, String.format("%.1f", assessment.getQuiz2()), 80);
-        addCell(row, String.format("%.1f", assessment.getQuiz3()), 80);
-        addCell(row, String.format("%.1f", assessment.getAverageQuizMarks()), 120);
-        addCell(row, String.format("%.1f", assessment.getAssessmentTotal()), 120);
-        addCell(row, String.format("%.1f", assessment.getAssessmentMarks()), 120);
-        addCell(row, String.format("%.1f", assessment.getTotalMarksAchieved()), 120);
+        // Alternate row colors for better readability
+        boolean isEvenRow = tableAssessment.getChildCount() % 2 == 0;
+        int backgroundColor = isEvenRow ?
+                ContextCompat.getColor(this, R.color.table_row_even) :
+                ContextCompat.getColor(this, R.color.table_row_odd);
+        row.setBackgroundColor(backgroundColor);
+
+        // Create a border shape for cells
+        GradientDrawable border = new GradientDrawable();
+        border.setColor(backgroundColor);
+        border.setStroke(1, ContextCompat.getColor(this, R.color.table_border));
+
+        addCell(row, assessment.getSubject(), 150, border);
+        addCell(row, String.format("%.1f", assessment.getQuiz1()), 80, border);
+        addCell(row, String.format("%.1f", assessment.getQuiz2()), 80, border);
+        addCell(row, String.format("%.1f", assessment.getQuiz3()), 80, border);
+
+        // Highlight average quiz marks
+        addCell(row, String.format("%.1f", assessment.getAverageQuizMarks()), 120, border);
+
+        addCell(row, String.format("%.1f", assessment.getAssessmentTotal()), 120, border);
+        addCell(row, String.format("%.1f", assessment.getAssessmentMarks()), 120, border);
+
+        // Highlight total marks achieved
+        GradientDrawable achievedBorder = new GradientDrawable();
+        achievedBorder.setColor(getScoreColor(assessment.getTotalMarksAchieved(), assessment.getAssessmentTotal()));
+        achievedBorder.setStroke(1, ContextCompat.getColor(this, R.color.table_border));
+        addCell(row, String.format("%.1f", assessment.getTotalMarksAchieved()), 120, achievedBorder);
 
         tableAssessment.addView(row);
     }
 
-    private void addCell(TableRow row, String text, int width) {
+    private void addCell(TableRow row, String text, int width, GradientDrawable background) {
         TextView textView = new TextView(this);
         TableRow.LayoutParams params = new TableRow.LayoutParams(width, TableRow.LayoutParams.WRAP_CONTENT);
         textView.setLayoutParams(params);
         textView.setText(text);
         textView.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
         textView.setGravity(Gravity.CENTER);
-        textView.setPadding(8, 8, 8, 8);
-        textView.setTextAppearance(this, R.style.TableCellStyle);
+        textView.setPadding(8, 12, 8, 12);
+        textView.setBackground(background);
         row.addView(textView);
     }
 
+    // Get color based on score percentage
+    private int getScoreColor(double score, double total) {
+        if (total == 0) return ContextCompat.getColor(this, R.color.table_row_even);
 
-
-
+        double percentage = (score / total) * 100;
+        if (percentage >= 85) {
+            return ContextCompat.getColor(this, R.color.score_excellent);
+        } else if (percentage >= 70) {
+            return ContextCompat.getColor(this, R.color.score_good);
+        } else if (percentage >= 50) {
+            return ContextCompat.getColor(this, R.color.score_average);
+        } else {
+            return ContextCompat.getColor(this, R.color.score_poor);
+        }
+    }
 
     private void fetchAssessmentDataElse() {
-        String type=getIntent().getStringExtra("type");
+        String type = getIntent().getStringExtra("type");
         String url = "http://193.203.162.232:5050/result/get_assessment_else"
                 + "?student_id=" + studentId
                 + "&type=" + type;
@@ -249,11 +334,11 @@ public class SingleResult extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.e(TAG, "Error fetching data: " + (error.getMessage() != null ? error.getMessage() : "Unknown error"));
+                        showErrorMessage("Could not load assessment data. Please try again later.");
                     }
                 }
         );
 
-        // Set a custom RetryPolicy to increase timeout
         jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
                 20000, // Timeout in milliseconds (20 seconds)
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
@@ -270,19 +355,24 @@ public class SingleResult extends AppCompatActivity {
                 try {
                     tableAssessment.removeAllViews(); // Clear old data before adding new rows
 
-                    Map<String, Map<String, SubjectAssessment>> monthlyAssessments = new HashMap<>();
+                    Map<String, Map<String, SubjectAssessment>> assessments = new HashMap<>();
 
-                    // Iterate over dynamic month-year keys in JSON
-                    JSONObject assessmentsData = responseData.getJSONObject("assessments"); // Extract the "assessments" object
-                    Iterator<String> keys = assessmentsData.keys(); // Iterate over its keys (month-year)
+                    // Iterate over dynamic keys in JSON
+                    JSONObject assessmentsData = responseData.getJSONObject("assessments");
+                    Iterator<String> keys = assessmentsData.keys();
+
+                    int examNumber = 1;
 
                     while (keys.hasNext()) {
-                        String monthYear = keys.next();
-                        Log.d("Checking", "Processing Month-Year: " + monthYear);
+                        String key = keys.next();
+                        Log.d("Checking", "Processing Key: " + key);
 
-                        JSONArray assessmentsArray = assessmentsData.getJSONArray(monthYear);
+                        JSONArray assessmentsArray = assessmentsData.getJSONArray(key);
 
-                        Log.d("Checking", "Total Assessments for " + monthYear + ": " + assessmentsArray.length());
+                        Log.d("Checking", "Total Assessments for " + key + ": " + assessmentsArray.length());
+
+                        // Create exam key
+                        String examKey = "Exam " + examNumber;
 
                         for (int i = 0; i < assessmentsArray.length(); i++) {
                             JSONObject obj = assessmentsArray.getJSONObject(i);
@@ -290,69 +380,141 @@ public class SingleResult extends AppCompatActivity {
 
                             double assessmentTotal = obj.isNull("assessment_total") ? 0.0 : obj.optDouble("assessment_total", 0.0);
                             double assessmentMarks = obj.isNull("assessment_marks") ? 0.0 : obj.optDouble("assessment_marks", 0.0);
-                            int sequence=obj.getInt("sequence");
+                            int sequence = obj.getInt("sequence");
 
-
-                            monthlyAssessments.putIfAbsent(monthYear, new HashMap<>());
-                            Map<String, SubjectAssessment> assessmentsMap = monthlyAssessments.get(monthYear);
+                            assessments.putIfAbsent(examKey, new HashMap<>());
+                            Map<String, SubjectAssessment> assessmentsMap = assessments.get(examKey);
 
                             SubjectAssessment subjectAssessment = assessmentsMap.getOrDefault(subjectName,
                                     new SubjectAssessment(subjectName, 0, 0, 0, assessmentMarks, assessmentTotal));
 
-
-
                             assessmentsMap.put(subjectName, subjectAssessment);
                         }
+
+                        examNumber++;
                     }
 
-                    for (String monthYear : monthlyAssessments.keySet()) {
-                        addMonthHeaderElse(monthYear);
-                        for (SubjectAssessment assessment : monthlyAssessments.get(monthYear).values()) {
+                    // Add a header row with column titles
+                    addTableHeaderElse();
+
+                    for (String examKey : assessments.keySet()) {
+                        addExamHeaderElse(examKey);
+                        for (SubjectAssessment assessment : assessments.get(examKey).values()) {
                             addSubjectRowElse(assessment);
                         }
                     }
 
                 } catch (Exception e) {
                     Log.e("Checking", "Error parsing data: " + e.getMessage());
+                    showErrorMessage("Error displaying assessment data.");
                 }
             }
         });
     }
 
-    private void addMonthHeaderElse(String monthYear) {
-        TableRow row = new TableRow(this);
-        row.setPadding(8, 16, 8, 16);
-        row.setBackgroundColor(ContextCompat.getColor(this, R.color.header_background));
+    private void addTableHeaderElse() {
+        TableRow headerRow = new TableRow(this);
+        headerRow.setPadding(8, 16, 8, 16);
+        headerRow.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+
+        String[] headers = {"Subject", "Total Marks", "Marks Achieved", "Percentage"};
+        int[] widths = {250, 120, 120, 120};
+
+        for (int i = 0; i < headers.length; i++) {
+            TextView tv = new TextView(this);
+            TableRow.LayoutParams params = new TableRow.LayoutParams(widths[i], TableRow.LayoutParams.WRAP_CONTENT);
+            tv.setLayoutParams(params);
+            tv.setText(headers[i]);
+            tv.setTextColor(ContextCompat.getColor(this, R.color.white));
+            tv.setGravity(Gravity.CENTER);
+            tv.setPadding(8, 8, 8, 8);
+            tv.setTypeface(null, Typeface.BOLD);
+            headerRow.addView(tv);
+        }
+
+        tableAssessment.addView(headerRow);
+    }
+
+    private void addExamHeaderElse(String examNumber) {
+        CardView cardView = new CardView(this);
+        CardView.LayoutParams cardParams = new CardView.LayoutParams(
+                CardView.LayoutParams.MATCH_PARENT,
+                CardView.LayoutParams.WRAP_CONTENT
+        );
+        cardParams.setMargins(0, 24, 0, 0);
+        cardView.setLayoutParams(cardParams);
+        cardView.setCardElevation(4f);
+        cardView.setRadius(8f);
+        cardView.setCardBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
 
         TextView textView = new TextView(this);
-        textView.setText(monthYear);
-        textView.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
+        textView.setText(examNumber);
+        textView.setTextColor(ContextCompat.getColor(this, R.color.white));
         textView.setGravity(Gravity.CENTER);
-        textView.setPadding(8, 16, 8, 16);
+        textView.setPadding(16, 16, 16, 16);
         textView.setTextSize(18);
         textView.setTypeface(null, Typeface.BOLD);
 
+        cardView.addView(textView);
+
+        // Add the card to the table as a full-width row
+        TableRow row = new TableRow(this);
         TableRow.LayoutParams params = new TableRow.LayoutParams(
                 TableRow.LayoutParams.MATCH_PARENT,
                 TableRow.LayoutParams.WRAP_CONTENT
         );
-        params.span = 7;
-        textView.setLayoutParams(params);
-
-        row.addView(textView);
+        params.span = 4; // Span all columns
+        cardView.setLayoutParams(params);
+        row.addView(cardView);
         tableAssessment.addView(row);
     }
 
     private void addSubjectRowElse(SubjectAssessment assessment) {
         TableRow row = new TableRow(this);
         row.setPadding(8, 8, 8, 8);
-        row.setBackgroundColor(ContextCompat.getColor(this, R.color.table_row_background));
 
-        addCell(row, assessment.getSubject(), 250);
-        addCell(row, String.format("%.1f", assessment.getAssessmentTotal()), 120);
-        addCell(row, String.format("%.1f", assessment.getAssessmentMarks()), 120);
+        // Alternate row colors for better readability
+        boolean isEvenRow = tableAssessment.getChildCount() % 2 == 0;
+        int backgroundColor = isEvenRow ?
+                ContextCompat.getColor(this, R.color.table_row_even) :
+                ContextCompat.getColor(this, R.color.table_row_odd);
+        row.setBackgroundColor(backgroundColor);
+
+        // Create border shape for cells
+        GradientDrawable border = new GradientDrawable();
+        border.setColor(backgroundColor);
+        border.setStroke(1, ContextCompat.getColor(this, R.color.table_border));
+
+        // Calculate percentage
+        double totalMarks = assessment.getAssessmentTotal();
+        double marksAchieved = assessment.getAssessmentMarks();
+        double percentage = totalMarks > 0 ? (marksAchieved / totalMarks) * 100 : 0;
+
+        // Highlight percentage cell based on performance
+        GradientDrawable percentageBorder = new GradientDrawable();
+        percentageBorder.setColor(getScoreColor(marksAchieved, totalMarks));
+        percentageBorder.setStroke(1, ContextCompat.getColor(this, R.color.table_border));
+
+        addCell(row, assessment.getSubject(), 250, border);
+        addCell(row, String.format("%.1f", totalMarks), 120, border);
+        addCell(row, String.format("%.1f", marksAchieved), 120, border);
+        addCell(row, String.format("%.1f%%", percentage), 120, percentageBorder);
 
         tableAssessment.addView(row);
     }
 
+    private void showErrorMessage(String message) {
+        if (tableAssessment != null) {
+            tableAssessment.removeAllViews();
+
+            TextView errorText = new TextView(this);
+            errorText.setText(message);
+            errorText.setTextColor(ContextCompat.getColor(this, R.color.error_text));
+            errorText.setGravity(Gravity.CENTER);
+            errorText.setTextSize(16);
+            errorText.setPadding(16, 32, 16, 32);
+
+            tableAssessment.addView(errorText);
+        }
+    }
 }

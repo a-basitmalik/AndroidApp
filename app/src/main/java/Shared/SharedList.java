@@ -24,17 +24,17 @@ import com.google.android.material.textfield.TextInputEditText;
 import org.json.JSONException;
 import java.util.ArrayList;
 import Admin.AddTeacher;
-import Admin.AdminDashboard;
 import Admin.AdminSingleStudentView;
 import Admin.AdminTeacherView;
+import Admin.AlumniProfileView;
 import Admin.addStudent;
-import Admin.selectCampus;
 
 public class SharedList extends AppCompatActivity {
     private ArrayAdapter<String> adapter;
     private ArrayList<String> namesList;
     private ArrayList<Integer> idsList;
     private static final String TYPE_STUDENTS = "students";
+    private static final String TYPE_ALUMNI = "alumni";
     private static final String TYPE_TEACHERS = "teachers";
 
     private String type;
@@ -77,9 +77,14 @@ public class SharedList extends AppCompatActivity {
         } else if (TYPE_TEACHERS.equals(type)) {
             header.setText("Teacher's Dashboard");
             fetchTeacherData(campusID);
-        } else {
-            Toast.makeText(this, "Invalid Type", Toast.LENGTH_SHORT).show();
         }
+        else if (TYPE_ALUMNI.equals(type)) {
+            header.setText("Alumni's Dashboard");
+            fetchTeacherData(campusID);
+        }
+        else {
+                Toast.makeText(this, "Invalid Type", Toast.LENGTH_SHORT).show();
+            }
     }
 
     private void setupFabButton() {
@@ -90,7 +95,8 @@ public class SharedList extends AppCompatActivity {
                 i = new Intent(SharedList.this, addStudent.class);
             } else if (TYPE_TEACHERS.equals(type)) {
                 i = new Intent(SharedList.this, AddTeacher.class);
-            } else {
+            }
+            else {
                 return;
             }
             i.putExtra("campusID", campusID); // Pass campusID to the new activity
@@ -141,8 +147,9 @@ public class SharedList extends AppCompatActivity {
         ListView listView = findViewById(R.id.studentListView);
         TextInputEditText searchEditText = findViewById(R.id.searchEditText);
         adapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_list_item_1, android.R.id.text1, namesList
+                this, R.layout.lightlist, android.R.id.text1, namesList
         );
+
         listView.setAdapter(adapter);
         setupSearchListener(searchEditText);
         setupItemClickListener(listView);
@@ -173,7 +180,12 @@ public class SharedList extends AppCompatActivity {
                 intent = new Intent(SharedList.this, AdminTeacherView.class);
                 intent.putExtra("selectedTeacherName", selectedName);
                 intent.putExtra("selectedTeacherId", selectedId);
-            } else {
+            }
+            else if (TYPE_ALUMNI.equals(type)) { //TODO: changing this
+                intent = new Intent(SharedList.this, AlumniProfileView.class);
+                intent.putExtra("selectedAlumniName", selectedName);
+                intent.putExtra("selectedAlumniId", selectedId);
+            }else {
                 return;
             }
             intent.putExtra("campusID", campusID); // Pass campusID to the new activity

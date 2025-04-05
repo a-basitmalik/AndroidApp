@@ -21,9 +21,6 @@
             android:textStyle="bold"
             android:layout_marginBottom="24dp"/>
 
-
-
-
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/bulkUploadCard"
             android:layout_width="match_parent"
@@ -89,6 +86,43 @@
             android:textColor="@color/text_secondary"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"/>
+
+        <!-- Profile Picture Section -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/profileImageCard"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="24dp"
+            app:cardCornerRadius="60dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/primary_color">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/profileImageView"
+                    android:layout_width="110dp"
+                    android:layout_height="110dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_profile"
+                    android:contentDescription="Profile picture"
+                    app:tint="@color/text_secondary"/>
+
+                <TextView
+                    android:id="@+id/uploadPhotoText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Upload Photo"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary"
+                    android:layout_marginTop="4dp"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
