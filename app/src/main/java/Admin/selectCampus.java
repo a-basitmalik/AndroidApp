@@ -84,6 +84,7 @@ public class selectCampus extends AppCompatActivity {
                 campusNameView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
                 campusNameView.setTextColor(getColor(R.color.text_primary));
 
+
                 //-----------------------------------Arrow-----------------------------------
                 ImageView arrowView = new ImageView(this);
                 LinearLayout.LayoutParams arrowParams = new LinearLayout.LayoutParams(
