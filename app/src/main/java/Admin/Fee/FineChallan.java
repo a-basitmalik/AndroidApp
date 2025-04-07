@@ -34,7 +34,7 @@ public class FineChallan extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fine_challan);
 
-        // Get data from intent
+
         Intent intent = getIntent();
         studentId = intent.getStringExtra("studentId");
         studentName = intent.getStringExtra("studentName");
@@ -43,10 +43,10 @@ public class FineChallan extends AppCompatActivity {
         fineDetails = intent.getStringExtra("fineDetails");
         challanNumber = intent.getStringExtra("challanNumber");
 
-        // Set current date
+
         challanDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
 
-        // Initialize UI elements
+
         TextView challanNumberText = findViewById(R.id.challanNumber);
         TextView challanDateText = findViewById(R.id.challanDate);
         TextView studentNameText = findViewById(R.id.studentName);
@@ -60,7 +60,7 @@ public class FineChallan extends AppCompatActivity {
         MaterialButton shareButton = findViewById(R.id.shareButton);
         MaterialButton closeButton = findViewById(R.id.closeButton);
 
-        // Set text values
+
         challanNumberText.setText(challanNumber);
         challanDateText.setText(challanDate);
         studentNameText.setText(studentName);
@@ -69,9 +69,9 @@ public class FineChallan extends AppCompatActivity {
         fineCountText.setText(String.valueOf(fineCount));
         fineDetailsText.setText(fineDetails);
 
-        // Set click listeners
+
         printButton.setOnClickListener(v -> {
-            // In a real app, implement print functionality here
+
             Toast.makeText(this, "Printing challan...", Toast.LENGTH_SHORT).show();
         });
 

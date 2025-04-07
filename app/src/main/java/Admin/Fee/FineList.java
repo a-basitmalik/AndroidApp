@@ -57,19 +57,19 @@ public class FineList extends AppCompatActivity implements FineAdapter.OnFineWai
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fine_list);
 
-        // Initialize views
+
         fineRecyclerView = findViewById(R.id.fineRecyclerView);
         searchEditText = findViewById(R.id.searchEditText);
         addFineFab = findViewById(R.id.addFineFab);
         btnGenerateReport = findViewById(R.id.btnGenerateReport);
 
-        // Setup RecyclerView
+
         fines = new ArrayList<>();
         adapter = new FineAdapter(fines, this, this, this);
         fineRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         fineRecyclerView.setAdapter(adapter);
 
-        // Setup search functionality
+
         searchEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -83,7 +83,7 @@ public class FineList extends AppCompatActivity implements FineAdapter.OnFineWai
             public void afterTextChanged(Editable s) {}
         });
 
-        // Set click listeners
+
         addFineFab.setOnClickListener(v -> showAddFineDialog());
         btnGenerateReport.setOnClickListener(v -> handleGenerateReport());
     }

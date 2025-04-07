@@ -51,12 +51,12 @@ public class addSubject extends AppCompatActivity {
     private int campusId;
     private String campusName;
 
-    // List to store time slots (day and time)
+
     private List<TimeSlot> timeSlots = new ArrayList<>();
 
-    private static final String BASE_URL = "http://193.203.162.232:5050"; // Replace with your Flask API URL
+    private static final String BASE_URL = "http://193.203.162.232:5050";
 
-    // Class to represent a time slot
+
     private static class TimeSlot {
         String day;
         String time;
@@ -99,7 +99,7 @@ public class addSubject extends AppCompatActivity {
     }
 
     private void setupTeacherDropdown() {
-        // Load teachers from API
+
         loadTeachers();
     }
 
@@ -117,7 +117,7 @@ public class addSubject extends AppCompatActivity {
         final ChipGroup dayChipGroup = dialogView.findViewById(R.id.chipGroupDays);
         final TextInputEditText etTimeDialog = dialogView.findViewById(R.id.etTimeDialog);
 
-        // Set up time picker
+
         etTimeDialog.setOnClickListener(v -> {
             TimePickerDialog timePickerDialog = new TimePickerDialog(
                     this,
@@ -152,7 +152,7 @@ public class addSubject extends AppCompatActivity {
                 return;
             }
 
-            // Add time slots for each selected day
+
             for (String day : selectedDays) {
                 addTimeSlot(day, time);
             }
@@ -163,17 +163,17 @@ public class addSubject extends AppCompatActivity {
     }
 
     private void addTimeSlot(String day, String time) {
-        // Add to our list
+
         timeSlots.add(new TimeSlot(day, time));
 
-        // Add chip to UI
+
         Chip chip = new Chip(this);
         chip.setText(day + " at " + time);
         chip.setCloseIconVisible(true);
         chip.setCheckable(false);
 
         chip.setOnCloseIconClickListener(v -> {
-            // Remove from list
+
             for (int i = 0; i < timeSlots.size(); i++) {
                 TimeSlot slot = timeSlots.get(i);
                 if (slot.day.equals(day) && slot.time.equals(time)) {
@@ -181,7 +181,7 @@ public class addSubject extends AppCompatActivity {
                     break;
                 }
             }
-            // Remove from UI
+
             selectedDaysChipGroup.removeView(chip);
         });
 
@@ -218,7 +218,7 @@ public class addSubject extends AppCompatActivity {
             }
         };
 
-        // Increase timeout settings
+
         jsonArrayRequest.setRetryPolicy(new DefaultRetryPolicy(
                 15000, // 15 seconds timeout
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
@@ -265,7 +265,7 @@ public class addSubject extends AppCompatActivity {
         String subjectName = etSubjectName.getText().toString();
         int year = Integer.parseInt(etYear.getText().toString());
 
-        // Find selected teacher
+
         String selectedTeacherName = teacherDropdown.getText().toString();
 
         int teacherId = -1;

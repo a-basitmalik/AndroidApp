@@ -80,7 +80,7 @@ public class addStudent extends AppCompatActivity {
 
         initializeViews();
         setupImagePicker();
-        subjectsDropdown = findViewById(R.id.subjectsDropdown);  // Ensure you have the correct ID here
+        subjectsDropdown = findViewById(R.id.subjectsDropdown);
         getSubjectsForCampusAndYear(selectedCampusId, 1);
         setupValidations();
         setupBulkUpload();
