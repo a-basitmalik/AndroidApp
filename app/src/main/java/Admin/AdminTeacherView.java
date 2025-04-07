@@ -75,7 +75,7 @@ public class AdminTeacherView extends AppCompatActivity {
 
     private void setupClickListeners() {
         editTeacherFab.setOnClickListener(v -> {
-            // Open image picker when FAB is clicked
+
             Intent intent = new Intent();
             intent.setType("image/*");
             intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -83,7 +83,7 @@ public class AdminTeacherView extends AppCompatActivity {
         });
 
         teacherPhoto.setOnClickListener(v -> {
-            // Optionally allow clicking the photo to change it
+
             Intent intent = new Intent();
             intent.setType("image/*");
             intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -161,7 +161,7 @@ public class AdminTeacherView extends AppCompatActivity {
     }
 
     private void uploadTeacherPhoto(Uri imageUri) {
-        // TODO: Implement actual photo upload logic
+        // todo
 
         Toast.makeText(this, "Uploading teacher photo...", Toast.LENGTH_SHORT).show();
 

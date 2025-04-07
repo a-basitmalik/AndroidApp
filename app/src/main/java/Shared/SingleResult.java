@@ -53,7 +53,6 @@ public class SingleResult extends AppCompatActivity {
             studentId = intent.getStringExtra("STUDENT_ID");
             String type = intent.getStringExtra("type");
 
-            // Set the exam title based on the type
             tvExamTitle.setText(type + " Assessment Results");
 
             if ("Monthly".equalsIgnoreCase(type)) {

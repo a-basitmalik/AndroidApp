@@ -32,26 +32,23 @@ public class AcademicCalendarActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_academic_calendar);
 
-        // Set up the toolbar
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Academic Calendar");
 
-        // Set up the RecyclerView for academic events
+
         eventsRecyclerView = findViewById(R.id.eventsRecyclerView);
         eventsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        // Assuming a custom adapter has been set up for the RecyclerView
-        //eventsRecyclerView.setAdapter(new EventsAdapter());
 
-        // Set up the Year Selection buttons
+
         yearToggleGroup = findViewById(R.id.yearToggleGroup);
         previousYearBtn = findViewById(R.id.previousYearBtn);
         currentYearBtn = findViewById(R.id.currentYearBtn);
         nextYearBtn = findViewById(R.id.nextYearBtn);
 
-        // Set up the Month Selection buttons
+
         monthToggleGroup = findViewById(R.id.monthToggleGroup);
-        // Set up the buttons for months (January to December)
+
         MaterialButton janBtn = findViewById(R.id.janBtn);
         MaterialButton febBtn = findViewById(R.id.febBtn);
         MaterialButton marBtn = findViewById(R.id.marBtn);
@@ -65,13 +62,22 @@ public class AcademicCalendarActivity extends AppCompatActivity {
         MaterialButton novBtn = findViewById(R.id.novBtn);
         MaterialButton decBtn = findViewById(R.id.decBtn);
 
-        // Example of adding functionality to month selection (using a listener)
+
         janBtn.setOnClickListener(v -> updateCalendarForMonth("January"));
         febBtn.setOnClickListener(v -> updateCalendarForMonth("February"));
         marBtn.setOnClickListener(v -> updateCalendarForMonth("March"));
-        // Repeat for all months...
+        aprBtn.setOnClickListener(v -> updateCalendarForMonth("March"));
+        mayBtn.setOnClickListener(v -> updateCalendarForMonth("March"));
+        junBtn.setOnClickListener(v -> updateCalendarForMonth("March"));
+        julBtn.setOnClickListener(v -> updateCalendarForMonth("March"));
+        augBtn.setOnClickListener(v -> updateCalendarForMonth("March"));
+        sepBtn.setOnClickListener(v -> updateCalendarForMonth("March"));
+        octBtn.setOnClickListener(v -> updateCalendarForMonth("March"));
+        novBtn.setOnClickListener(v -> updateCalendarForMonth("March"));
+        decBtn.setOnClickListener(v -> updateCalendarForMonth("March"));
 
-        // Example of setting year selection
+
+
         yearToggleGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
             if (checkedId == R.id.previousYearBtn) {
                 updateCalendarForYear("2022-23");
@@ -85,11 +91,9 @@ public class AcademicCalendarActivity extends AppCompatActivity {
 
     private void updateCalendarForMonth(String month) {
         // Logic for updating the calendar based on selected month
-        // This could involve filtering events or updating a UI component
     }
 
     private void updateCalendarForYear(String year) {
         // Logic for updating the calendar based on selected year
-        // This could involve filtering events or updating a UI component
     }
 }

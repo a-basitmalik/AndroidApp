@@ -54,7 +54,6 @@ public class AdminSingleStudentView extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_single_student_view);
 
-        // Setup toolbar with collapsing behavior
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -64,7 +63,6 @@ public class AdminSingleStudentView extends AppCompatActivity {
 
         requestQueue = Volley.newRequestQueue(this);
 
-        // UI references
         TextView studentNameTitle = findViewById(R.id.studentNameTitle);
         TextView studentPhone = findViewById(R.id.studentPhone);
         TextView studentEmail = findViewById(R.id.studentEmail);
@@ -88,14 +86,14 @@ public class AdminSingleStudentView extends AppCompatActivity {
             studentRFID = getIntent().getIntExtra("selectedStudentRfid", 0);
         }
 
-        // Load student data
+        //check
         loadStudentData(studentNameTitle, studentPhone, studentEmail, studentID, studentYear);
         getSubjectsEnrolled(subjectsListView);
         getAttendanceHistory(totalClassesText, presentText, absentText, attendancePercentageText);
         getResultReports(resultsText);
         getFinesDues(finesText);
 
-        // Set up FAB click listener for photo upload
+
         editStudentFab.setOnClickListener(v -> {
             Intent intent = new Intent();
             intent.setType("image/*");
@@ -103,7 +101,7 @@ public class AdminSingleStudentView extends AppCompatActivity {
             startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
         });
 
-        // Allow clicking the photo to change it
+
         studentPhoto.setOnClickListener(v -> {
             Intent intent = new Intent();
             intent.setType("image/*");
@@ -119,10 +117,10 @@ public class AdminSingleStudentView extends AppCompatActivity {
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             Uri imageUri = data.getData();
 
-            // Display the selected image
+
             studentPhoto.setImageURI(imageUri);
 
-            // Upload the image to server
+
             uploadStudentPhoto(imageUri);
         }
     }
@@ -208,27 +206,22 @@ public class AdminSingleStudentView extends AppCompatActivity {
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 response -> {
                     try {
-                        // Set student name in title
+
                         String studentName = response.getString("student_name");
                         nameTitle.setText(studentName);
 
-                        // Set student ID
                         id.setText("Student ID: " + response.getInt("RFID"));
 
-                        // Set student year
                         year.setText("Year: " + response.getInt("year"));
 
-                        // Set contact info with autoLink enabled
                         String phoneNumber = response.getString("phone_number");
                         phone.setText(phoneNumber);
 
-                        // Set email (using a default or from API if available)
                         String emailAddress = response.has("email") ?
                                 response.getString("email") :
                                 studentName.toLowerCase().replace(" ", ".") + "@university.edu";
                         email.setText(emailAddress);
 
-                        // Load student photo if available
                         if (response.has("photo_url") && !response.isNull("photo_url")) {
                             currentPhotoUrl = response.getString("photo_url");
 
@@ -264,8 +257,8 @@ public class AdminSingleStudentView extends AppCompatActivity {
                     }
 
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                            R.layout.subject_list_item, // Create a custom layout
-                            R.id.tvSubjectName, // TextView ID in custom layout
+                            R.layout.subject_list_item,
+                            R.id.tvSubjectName,
                             subjects);
                     listView.setAdapter(adapter);
                 }, error -> Toast.makeText(this, "Error fetching subjects", Toast.LENGTH_SHORT).show());
@@ -289,7 +282,7 @@ public class AdminSingleStudentView extends AppCompatActivity {
                         int absences = total - attended;
                         double attendancePercentage = response.getDouble("AttendancePercentage");
 
-                        // Update UI with formatted values
+
                         totalClasses.setText(String.valueOf(total));
                         present.setText(String.valueOf(attended));
                         absent.setText(String.valueOf(absences));

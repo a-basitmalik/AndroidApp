@@ -29,7 +29,7 @@ public class QueryResponse extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_query_response);
 
-        // Get query from intent
+
         query = (Query) getIntent().getSerializableExtra("query");
         if (query == null) {
             Toast.makeText(this, "Error loading query", Toast.LENGTH_SHORT).show();
@@ -98,7 +98,7 @@ public class QueryResponse extends AppCompatActivity {
         // TODO DB CALL ->upload
         query.setResponse(response);
 
-        // Show success message and finish activity
+
         Toast.makeText(this, "Response submitted successfully", Toast.LENGTH_SHORT).show();
         setResult(RESULT_OK);
         finish();
