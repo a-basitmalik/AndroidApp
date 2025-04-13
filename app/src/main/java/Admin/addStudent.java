@@ -5,7 +5,6 @@ import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.RetryPolicy;
 import android.util.Log;
 import android.widget.ImageView;
-import android.view.View;
 import android.Manifest;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -80,10 +79,10 @@ public class addStudent extends AppCompatActivity {
 
         initializeViews();
         setupImagePicker();
-        subjectsDropdown = findViewById(R.id.subjectsDropdown);
+
         getSubjectsForCampusAndYear(selectedCampusId, 1);
         setupValidations();
-        setupBulkUpload();
+        //setupBulkUpload();
     }
 
     private void setupImagePicker() {
@@ -133,7 +132,7 @@ public class addStudent extends AppCompatActivity {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 openImagePicker();
             } else {
-                showErrorDialog("Permission denied. Cannot select profile picture.");
+                openImagePicker();
             }
         }
     }
@@ -437,8 +436,6 @@ public class addStudent extends AppCompatActivity {
             jsonObject.put("student_name", student.getStudentName());
             jsonObject.put("year", student.getYear());
             jsonObject.put("subjects", new JSONArray(student.getSubjects()));
-
-            // Add profile image if available
             if (profileBitmap != null) {
                 jsonObject.put("profile_image", encodeImage(profileBitmap));
             }

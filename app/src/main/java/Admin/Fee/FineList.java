@@ -50,7 +50,7 @@ public class FineList extends AppCompatActivity implements FineAdapter.OnFineWai
     private MaterialButton btnGenerateReport;
 
     private final String[] fineTypes = {"Absentee Fine", "Exam leaving Fine", "Uniform Fine", "Late Fine", "Custom Fine"};
-    private double[] defaultFineAmounts = {10.00, 25.00, 15.00, 5.00, 0.00};
+    private double[] defaultFineAmounts = {100.00, 500.00, 500.00, 100.00, 0.00};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -347,6 +347,8 @@ class FineAdapter extends RecyclerView.Adapter<FineAdapter.FineViewHolder> {
     private OnFineRemoveClickListener removeClickListener;
     private OnFineChallanClickListener challanClickListener;
     private Map<String, Boolean> selectedFines;
+
+
 
     public interface OnFineWaiverClickListener {
         void onWaiverClick(Fine fine, int position);

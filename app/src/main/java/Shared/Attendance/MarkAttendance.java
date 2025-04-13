@@ -27,7 +27,7 @@ public class MarkAttendance extends AppCompatActivity {
     private StudentAttendanceAdapter attendanceAdapter;
     private RequestQueue requestQueue;
 
-    private static final String BASE_URL = "http://193.203.162.232:5050/attendance/get_unmarked_attendees"; // Replace with actual API URL
+    private static final String BASE_URL = "http://193.203.162.232:5050/attendance/get_unmarked_attendees";
 
     void initViews() {
         classSpinner = findViewById(R.id.classSpinner);

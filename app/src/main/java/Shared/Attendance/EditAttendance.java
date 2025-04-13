@@ -140,17 +140,17 @@ public class EditAttendance extends AppCompatActivity {
     }
 
     private void setupClassSpinner() {
-        String[] classes = {"Class 1", "Class 2", "Class 3", "Class 4", "Class 5",
-                "Class 6", "Class 7", "Class 8", "Class 9", "Class 10"};
+        String[] yearLabels = {"All Years", "First Year", "Second Year"};
+        final int[] yearValues = {0, 1, 2}; // Corresponding year values
 
-        ArrayAdapter<String> classAdapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_dropdown_item_1line, classes);
-        classSpinner.setAdapter(classAdapter);
+        ArrayAdapter<String> yearAdapter = new ArrayAdapter<>(
+                this, android.R.layout.simple_dropdown_item_1line, yearLabels);
+        classSpinner.setAdapter(yearAdapter);
 
-        // Set listener
         classSpinner.setOnItemClickListener((parent, view, position, id) -> {
-            selectedClass = classes[position];
-            fetchAttendanceRecords();
+            int selectedYear = yearValues[position];
+            selectedClass = String.valueOf(selectedYear);  // This will be 0, 1, or 2
+            fetchAttendanceRecords();  // now this uses selectedClass as year value
         });
     }
 
@@ -172,8 +172,39 @@ public class EditAttendance extends AppCompatActivity {
             return;
         }
 
-        return;
+        String url = "http://193.203.162.232:5050/attendance/get_attendance_edit?campus_id=" + campusId +
+                "&date=" + selectedDate + "&year=" + selectedClass;
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                response -> {
+                    try {
+                        if (response.getBoolean("success")) {
+                            JSONArray data = response.getJSONArray("attendance_data");
+                            parseAttendanceRecords(data);
+                        } else {
+                            Toast.makeText(this, "Failed to fetch records", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Parse error", e);
+                    }
+                },
+                error -> {
+                    Log.e(TAG, "Fetch error", error);
+                    Toast.makeText(this, "Request timeout or error", Toast.LENGTH_SHORT).show();
+                }
+        );
+
+        // Set timeout to 30 seconds (30000 ms), and 0 retries
+        request.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        queue.add(request);
     }
+
 
     private void parseAttendanceRecords(JSONArray recordsArray) throws JSONException {
         attendanceRecords.clear();

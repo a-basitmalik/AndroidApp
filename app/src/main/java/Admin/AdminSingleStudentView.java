@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.bumptech.glide.Glide;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -206,7 +207,6 @@ public class AdminSingleStudentView extends AppCompatActivity {
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 response -> {
                     try {
-
                         String studentName = response.getString("student_name");
                         nameTitle.setText(studentName);
 
@@ -222,9 +222,10 @@ public class AdminSingleStudentView extends AppCompatActivity {
                                 studentName.toLowerCase().replace(" ", ".") + "@university.edu";
                         email.setText(emailAddress);
 
-                        if (response.has("photo_url") && !response.isNull("photo_url")) {
-                            currentPhotoUrl = response.getString("photo_url");
+                        if (response.has("picture_url") && !response.isNull("picture_url")) {
+                            currentPhotoUrl = response.getString("picture_url");
 
+                            Glide.with(this).load(currentPhotoUrl).into(studentPhoto); // Glide
                         }
 
                     } catch (JSONException e) {

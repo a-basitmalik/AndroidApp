@@ -107,13 +107,11 @@ public class AdminTeacherView extends AppCompatActivity {
                             teacherPhone.setText(response.getString("phone"));
                             teacherRating.setRating((float) response.getDouble("rating"));
 
-                            // Load teacher photo if available
                             if (response.has("photo_url") && !response.isNull("photo_url")) {
                                 currentPhotoUrl = response.getString("photo_url");
 
                             }
 
-                            // Subjects
                             JSONArray subjectsArray = response.getJSONArray("subjects");
                             List<String> subjects = new ArrayList<>();
                             for (int i = 0; i < subjectsArray.length(); i++) {
@@ -123,7 +121,6 @@ public class AdminTeacherView extends AppCompatActivity {
                                     android.R.layout.simple_list_item_1, subjects);
                             subjectsList.setAdapter(subjectsAdapter);
 
-                            // Feedback
                             JSONArray feedbackArray = response.getJSONArray("feedback");
                             List<String> feedback = new ArrayList<>();
                             for (int i = 0; i < feedbackArray.length(); i++) {

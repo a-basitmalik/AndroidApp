@@ -154,7 +154,7 @@ public class AttendanceDashboard extends AppCompatActivity {
     }
 
     private void fetchAttendanceData() {
-        String url = "YOUR_API_ENDPOINT_HERE?campusId=" + campusId;
+        String url = "http://193.203.162.232:5050/attendance/get_attendance?campusId=" + campusId;
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
 
@@ -207,7 +207,7 @@ public class AttendanceDashboard extends AppCompatActivity {
                 });
 
         jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-                10000,
+                20000,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
